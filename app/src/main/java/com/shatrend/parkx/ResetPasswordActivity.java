@@ -23,7 +23,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(ResetPasswordActivity.this, "Password successfully changed", Toast.LENGTH_SHORT).show();
-                Intent mapsIntent = new Intent(ResetPasswordActivity.this, MapsActivity.class);
+                Intent mapsIntent = new Intent(ResetPasswordActivity.this, HomeActivity.class);
                 startActivity(mapsIntent);
             }
         });
