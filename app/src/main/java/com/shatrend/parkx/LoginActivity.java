@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mapsIntent = new Intent(LoginActivity.this, MapsActivity.class);
+                Intent mapsIntent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(mapsIntent);
             }
         });
