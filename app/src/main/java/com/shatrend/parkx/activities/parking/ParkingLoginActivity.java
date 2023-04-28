@@ -1,4 +1,4 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.activities.parking;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,8 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shatrend.parkx.activities.driver.HomeActivity;
+import com.shatrend.parkx.R;
 import com.shatrend.parkx.helpers.DatabaseHelper;
-import com.shatrend.parkx.models.Driver;
 import com.shatrend.parkx.models.Parking;
 
 public class ParkingLoginActivity extends AppCompatActivity {

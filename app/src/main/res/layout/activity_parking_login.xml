@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ParkingLoginActivity">
+    tools:context=".activities.parking.ParkingLoginActivity">
 
     <EditText
         android:id="@+id/activity_parking_login_et_password"

@@ -1,4 +1,4 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.fragments.driver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +43,7 @@ import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.shatrend.parkx.R;
 
 import java.util.List;
 

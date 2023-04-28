@@ -1,4 +1,4 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.activities.driver;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.shatrend.parkx.R;
 
 public class SendResetLinkActivity extends AppCompatActivity {
 

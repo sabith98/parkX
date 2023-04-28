@@ -1,4 +1,4 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.shatrend.parkx.R;
+import com.shatrend.parkx.activities.driver.DriverLoginActivity;
+import com.shatrend.parkx.activities.parking.ParkingLoginActivity;
 
 public class UserTypeActivity extends AppCompatActivity {
 

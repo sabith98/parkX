@@ -16,21 +16,21 @@
         android:theme="@style/Theme.ParkX"
         tools:targetApi="31">
         <activity
-            android:name=".ParkingRegisterActivity"
+            android:name=".activities.parking.ParkingRegisterActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".ParkingLoginActivity"
+            android:name=".activities.parking.ParkingLoginActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".UserTypeActivity"
+            android:name=".activities.UserTypeActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
@@ -44,7 +44,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name=".activities.driver.HomeActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
@@ -60,7 +60,7 @@
         <!-- android:value="" /> -->
         <!-- </activity> -->
         <activity
-            android:name=".EditUserProfileActivity"
+            android:name=".activities.driver.EditUserProfileActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -84,35 +84,35 @@
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_maps" /> -->
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name=".activities.driver.ResetPasswordActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".VerifyCodeActivity"
+            android:name=".activities.driver.VerifyCodeActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".SendResetLinkActivity"
+            android:name=".activities.driver.SendResetLinkActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".DriverRegisterActivity"
+            android:name=".activities.driver.DriverRegisterActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".DriverLoginActivity"
+            android:name=".activities.driver.DriverLoginActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"

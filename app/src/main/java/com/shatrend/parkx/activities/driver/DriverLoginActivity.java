@@ -1,7 +1,6 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.activities.driver;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shatrend.parkx.R;
 import com.shatrend.parkx.helpers.DatabaseHelper;
 import com.shatrend.parkx.models.Driver;
 

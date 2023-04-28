@@ -1,4 +1,4 @@
-package com.shatrend.parkx;
+package com.shatrend.parkx.activities.driver;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -7,6 +7,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
+import com.shatrend.parkx.fragments.driver.MapsFragment;
+import com.shatrend.parkx.fragments.driver.ProfileFragment;
+import com.shatrend.parkx.R;
+import com.shatrend.parkx.fragments.driver.SavedFragment;
 import com.shatrend.parkx.databinding.ActivityHomeBinding;
 
 

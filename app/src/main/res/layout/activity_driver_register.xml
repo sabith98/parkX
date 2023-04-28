@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DriverRegisterActivity">
+    tools:context=".activities.driver.DriverRegisterActivity">
 
     <TextView
         android:id="@+id/textView6"
