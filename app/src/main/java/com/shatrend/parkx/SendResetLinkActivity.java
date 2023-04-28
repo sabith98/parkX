@@ -1,12 +1,9 @@
 package com.shatrend.parkx;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,7 +26,7 @@ public class SendResetLinkActivity extends AppCompatActivity {
         tvToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent registerIntent = new Intent(SendResetLinkActivity.this, RegisterActivity.class);
+                Intent registerIntent = new Intent(SendResetLinkActivity.this, DriverRegisterActivity.class);
                 startActivity(registerIntent);
             }
         });
