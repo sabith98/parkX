@@ -44,17 +44,23 @@ public class ParkingRegisterActivity extends AppCompatActivity {
 
                 if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
                     Parking parking = new Parking(0, email, password);
-                    boolean success = mDatabaseHelper.addParking(parking);
+                    long parkingIdLong = mDatabaseHelper.addParking(parking);
+                    int parkingId = (int) parkingIdLong;
 
-                    if (success) {
+                    if (parkingId != -1) {
                         Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                        Intent homeIntent = new Intent(ParkingRegisterActivity.this, HomeActivity.class);
+                        Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
+                        parkingInfoIntent.putExtra("parking_id", parkingId);
+                        startActivity(parkingInfoIntent);
                     } else {
                         Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(ParkingRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
                 }
+
+//                Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
+//                startActivity(parkingInfoIntent);
             }
         });
 

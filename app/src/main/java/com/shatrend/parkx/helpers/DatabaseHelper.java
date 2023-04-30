@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.shatrend.parkx.models.Driver;
 import com.shatrend.parkx.models.Parking;
+import com.shatrend.parkx.models.ParkingInfo;
+import com.shatrend.parkx.models.ParkingLocation;
+import com.shatrend.parkx.models.ParkingRate;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "ParkX.db";
@@ -17,6 +20,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table names
     public static final String DRIVER_TABLE = "DRIVER_TABLE";
     public static final String PARKING_TABLE = "PARKING_TABLE";
+    public static final String PARKING_INFO_TABLE = "PARKING_INFO";
+    public static final String PARKING_LOCATION_TABLE = "PARKING_LOCATION";
+    public static final String PARKING_RATE_TABLE = "PARKING_RATE";
+    public static final String PARKING_SLOTS_TABLE = "PARKING_SLOTS";
 
     // DRIVER TABLE columns
     public static final String DRIVER_TABLE_COL_1 = "_ID";
@@ -28,23 +35,77 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String PARKING_TABLE_COL_EMAIL = "EMAIL";
     public static final String PARKING_TABLE_COL_PASSWORD = "PASSWORD";
 
+    // PARKING INFO TABLE columns
+    public static final String PARKING_INFO_TABLE_COL_PARKING_ID = "PARKING_ID";
+    public static final String PARKING_INFO_TABLE_COL_NAME = "PARKING_NAME";
+    public static final String PARKING_INFO_TABLE_COL_IMAGE = "PARKING_IMAGE";
+    public static final String PARKING_INFO_TABLE_COL_PHONE = "PARKING_PHONE";
+
+    // PARKING LOCATION TABLE columns
+    public static final String PARKING_LOCATION_TABLE_COL_PARKING_ID = "PARKING_ID";
+    public static final String PARKING_LOCATION_TABLE_COL_LATITUDE = "LATITUDE";
+    public static final String PARKING_LOCATION_TABLE_COL_LONGITUDE = "LONGITUDE";
+
+    // PARKING RATE TABLE columns
+    public static final String PARKING_RATE_TABLE_COL_PARKING_ID = "PARKING_ID";
+    public static final String PARKING_RATE_TABLE_COL_BIKE_RATE = "BIKE_RATE";
+    public static final String PARKING_RATE_TABLE_COL_3WHEELER_RATE = "THREE_WHEELER_RATE";
+    public static final String PARKING_RATE_TABLE_COL_4WHEELER_RATE = "FOUR_WHEELER_RATE";
+
+    // PARKING SLOTS TABLE columns
+    public static final String PARKING_SLOTS_TABLE_COL_PARKING_ID = "PARKING_ID";
+    public static final String PARKING_SLOTS_TABLE_COL_BIKE_SLOTS = "BIKE_SLOTS";
+    public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS = "THREE_WHEELER_SLOTS";
+    public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS = "FOUR_WHEELER_SLOTS";
+
+
     // Queries for creating new Tables
-//    public static final String DRIVER_TABLE_CREATE_QUERY = "CREATE TABLE " + DRIVER_TABLE
-//            + " (" + DRIVER_TABLE_COL_1 + " INTEGER " + "PRIMARY KEY AUTOINCREMENT, "
-//            + DRIVER_TABLE_COL_2 + " TEXT, " + DRIVER_TABLE_COL_3 + " TEXT)";
     public static final String DRIVER_TABLE_CREATE_QUERY = "CREATE TABLE " + DRIVER_TABLE
             + "(" + DRIVER_TABLE_COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + DRIVER_TABLE_COL_2 + " TEXT, " + DRIVER_TABLE_COL_3 + " TEXT" + ")";
-
-    public static final String PARKING_TABLE_CREATE_QUERY = "CREATE TABLE " + PARKING_TABLE
-            + "(" + PARKING_TABLE_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + PARKING_TABLE_COL_EMAIL + " TEXT, " + PARKING_TABLE_COL_PASSWORD + " TEXT" + ")";
 
     public static final String CREATE_PARKING_TABLE_QUERY = "CREATE TABLE " + PARKING_TABLE +
             "(" + PARKING_TABLE_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             PARKING_TABLE_COL_EMAIL + " TEXT, " + PARKING_TABLE_COL_PASSWORD + " TEXT" + ")";
 
-//    public static final String PARKING_TABLE = "PARKING_TABLE";
+    public static final String CREATE_PARKING_INFO_TABLE_QUERY = "CREATE TABLE " + PARKING_INFO_TABLE +
+            "(" + PARKING_INFO_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
+                + PARKING_INFO_TABLE_COL_PHONE + " TEXT, "
+                + PARKING_INFO_TABLE_COL_NAME + " TEXT, "
+                + PARKING_INFO_TABLE_COL_IMAGE + " BLOB, "
+                + "FOREIGN KEY(" + PARKING_INFO_TABLE_COL_PARKING_ID + ") " + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ")"
+                + ")";
+
+//    public static final String CREATE_PARKING_LOCATION_TABLE_QUERY = "CREATE TABLE " + PARKING_LOCATION_TABLE +
+//            "(" + PARKING_LOCATION_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
+//            + "FOREIGN KEY(" + PARKING_LOCATION_TABLE_COL_PARKING_ID + ") "+ "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + "),"
+//            + PARKING_LOCATION_TABLE_COL_LATITUDE + " REAL, "
+//            + PARKING_LOCATION_TABLE_COL_LONGITUDE + " REAL" + ")";
+
+    public static final String CREATE_PARKING_LOCATION_TABLE_QUERY = "CREATE TABLE " + PARKING_LOCATION_TABLE +
+            " (" + PARKING_LOCATION_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
+            + PARKING_LOCATION_TABLE_COL_LATITUDE + " REAL, "
+            + PARKING_LOCATION_TABLE_COL_LONGITUDE + " REAL, "
+            + "FOREIGN KEY(" + PARKING_LOCATION_TABLE_COL_PARKING_ID + ") REFERENCES "
+            + PARKING_TABLE + "(" + PARKING_TABLE_COL_ID + ")"
+            + ")";
+
+    public static final String CREATE_PARKING_RATE_TABLE_QUERY = "CREATE TABLE " + PARKING_RATE_TABLE +
+            " (" + PARKING_RATE_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
+            + PARKING_RATE_TABLE_COL_BIKE_RATE + " REAL, "
+            + PARKING_RATE_TABLE_COL_3WHEELER_RATE + " REAL, "
+            + PARKING_RATE_TABLE_COL_4WHEELER_RATE + " REAL, "
+            + "FOREIGN KEY(" + PARKING_RATE_TABLE_COL_PARKING_ID + ") REFERENCES " + PARKING_TABLE + "(" + PARKING_TABLE_COL_ID + ")"
+            + ")";
+
+    public static final String CREATE_PARKING_SLOTS_TABLE_QUERY = "CREATE TABLE " + PARKING_SLOTS_TABLE +
+            "(" + PARKING_SLOTS_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
+            + PARKING_SLOTS_TABLE_COL_BIKE_SLOTS + " INTEGER, "
+            + PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS + " INTEGER, "
+            + PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS + " INTEGER, "
+            + "FOREIGN KEY (" + PARKING_SLOTS_TABLE_COL_PARKING_ID + ") "
+            + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ") "
+            + ")";
 
 
     public DatabaseHelper(Context context) {
@@ -53,15 +114,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("PRAGMA foreign_keys=ON;");
         sqLiteDatabase.execSQL(CREATE_PARKING_TABLE_QUERY);
         sqLiteDatabase.execSQL(DRIVER_TABLE_CREATE_QUERY);
-
+        sqLiteDatabase.execSQL(CREATE_PARKING_INFO_TABLE_QUERY);
+        sqLiteDatabase.execSQL(CREATE_PARKING_LOCATION_TABLE_QUERY);
+        sqLiteDatabase.execSQL(CREATE_PARKING_RATE_TABLE_QUERY);
+        sqLiteDatabase.execSQL(CREATE_PARKING_SLOTS_TABLE_QUERY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DRIVER_TABLE);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PARKING_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PARKING_INFO_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PARKING_LOCATION_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PARKING_RATE_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PARKING_SLOTS_TABLE);
         onCreate(sqLiteDatabase);
     }
 
@@ -134,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //  Register new parking account
-    public boolean addParking(Parking parking) {
+    public long addParking(Parking parking) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -144,7 +213,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(PARKING_TABLE, null, contentValues);
         db.close();
 
-        return result != -1;
+//        return result != -1;
+        if (result != -1) return result;
+        else return -1;
+    }
+
+    public boolean addParkingInfo(long parkingId, ParkingInfo pi, ParkingLocation pl, ParkingRate pr) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Insert data into parking info table
+        ContentValues parkingInfoValues = new ContentValues();
+        parkingInfoValues.put(PARKING_INFO_TABLE_COL_PARKING_ID, parkingId);
+        parkingInfoValues.put(PARKING_INFO_TABLE_COL_IMAGE, pi.getParkingImage());
+        parkingInfoValues.put(PARKING_INFO_TABLE_COL_NAME, pi.getParkingName());
+        parkingInfoValues.put(PARKING_INFO_TABLE_COL_PHONE, pi.getParkingPhone());
+
+        // Insert data into parking location table
+        ContentValues parkingLocationValues = new ContentValues();
+        parkingLocationValues.put(PARKING_LOCATION_TABLE_COL_PARKING_ID, parkingId);
+        parkingLocationValues.put(PARKING_LOCATION_TABLE_COL_LATITUDE, pl.getLatitude());
+        parkingLocationValues.put(PARKING_LOCATION_TABLE_COL_LONGITUDE, pl.getLongitude());
+
+        // Insert data into parking rate table
+        ContentValues parkingRateValues = new ContentValues();
+        parkingRateValues.put(PARKING_RATE_TABLE_COL_PARKING_ID, parkingId);
+        parkingRateValues.put(PARKING_RATE_TABLE_COL_BIKE_RATE, pr.getBikeRate());
+        parkingRateValues.put(PARKING_RATE_TABLE_COL_3WHEELER_RATE, pr.getThreeWheelerRate());
+        parkingRateValues.put(PARKING_RATE_TABLE_COL_4WHEELER_RATE, pr.getFourWheelerRate());
+
+        long resultInfo = db.insert(PARKING_INFO_TABLE, null, parkingInfoValues);
+        long resultLocation = db.insert(PARKING_LOCATION_TABLE, null, parkingLocationValues);
+        long resultRate = db.insert(PARKING_RATE_TABLE, null, parkingRateValues);
+
+        if (resultInfo != -1 & resultLocation != -1 & resultRate != -1) return true;
+        else return false;
     }
 
     // Retrieve parking details using email for login
