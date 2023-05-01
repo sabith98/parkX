@@ -16,6 +16,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,10 +29,13 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.shatrend.parkx.R;
+import com.shatrend.parkx.activities.driver.HomeActivity;
 import com.shatrend.parkx.helpers.DatabaseHelper;
+import com.shatrend.parkx.models.Parking;
 import com.shatrend.parkx.models.ParkingInfo;
 import com.shatrend.parkx.models.ParkingLocation;
 import com.shatrend.parkx.models.ParkingRate;
+import com.shatrend.parkx.models.ParkingSlots;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -46,6 +50,7 @@ public class ParkingInfoActivity extends AppCompatActivity {
 
     private ImageView ivImage;
     private EditText etName, etPhone, et4wheeler, et3wheeler, etBike;
+    private EditText etBikeSlots, et3wheelerSlots, et4wheelerSlots;
     private Button btnGetLocation, btnUpdate;
     private ImageButton ibCamera, ibGallery;
     private TextView tvLocationInfo;
@@ -67,6 +72,9 @@ public class ParkingInfoActivity extends AppCompatActivity {
         et4wheeler = findViewById(R.id.activity_parking_info_et_4wheeler);
         et3wheeler = findViewById(R.id.activity_parking_info_et_3wheeler);
         etBike = findViewById(R.id.activity_parking_info_et_bike);
+        etBikeSlots = findViewById(R.id.activity_parking_info_et_bike_slots);
+        et3wheelerSlots = findViewById(R.id.activity_parking_info_et_3wheeler_slots);
+        et4wheelerSlots = findViewById(R.id.activity_parking_info_et_4wheeler_slots);
         tvLocationInfo = findViewById(R.id.activity_parking_info_tv_location_info);
 
         databaseHelper = new DatabaseHelper(this);
@@ -104,21 +112,71 @@ public class ParkingInfoActivity extends AppCompatActivity {
                 int parkingId = getIntent().getIntExtra("parking_id", -1);
 //                int parkingId = (int) parkingIdLong;
 
-                double latitude = locationValues.get("latitude");
-                double longitude = locationValues.get("longitude");
+//                double latitude = locationValues.get("latitude");
+//                double longitude = locationValues.get("longitude");
 
+                double latitude = 8.720167;
+                double longitude = 81.173362;
+
+                String bikeRateStr = etBike.getText().toString();
                 int bikeRate = Integer.parseInt(etBike.getText().toString());
                 int threeWheelerRate = Integer.parseInt(et3wheeler.getText().toString());
                 int fourWheelerRate = Integer.parseInt(et4wheeler.getText().toString());
 
+                int bikeSlots = Integer.parseInt(etBikeSlots.getText().toString());
+                int threeWheelerSlots = Integer.parseInt(et3wheelerSlots.getText().toString());
+                int fourWheelerSlots = Integer.parseInt(et4wheelerSlots.getText().toString());
+
                 ParkingInfo parkingInfo = new ParkingInfo(parkingId,name,phone,parkingImageBytes);
                 ParkingLocation parkingLocation = new ParkingLocation(parkingId,latitude,longitude);
                 ParkingRate parkingRate = new ParkingRate(parkingId,bikeRate,threeWheelerRate,fourWheelerRate);
+                ParkingSlots parkingSlots = new ParkingSlots(parkingId,bikeSlots,threeWheelerSlots,fourWheelerSlots);
 
-                databaseHelper.addParkingInfo(parkingId,parkingInfo,parkingLocation,parkingRate);
+                boolean success = databaseHelper.addParkingInfo(parkingId,parkingInfo,parkingLocation,parkingRate,parkingSlots);
+
+                if (success) {
+                    Toast.makeText(ParkingInfoActivity.this, "Parking info updated", Toast.LENGTH_SHORT).show();
+                    Intent homeIntent = new Intent(ParkingInfoActivity.this, HomeActivity.class);
+                    startActivity(homeIntent);
+                } else {
+                    Toast.makeText(ParkingInfoActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
+                }
+//                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(phone)) {
+//                    Parking parking = new Parking(0, email, password);
+//                    long parkingIdLong = mDatabaseHelper.addParking(parking);
+//                    int parkingId = (int) parkingIdLong;
+//
+//                    if (parkingId != -1) {
+//                        Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+//                        Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
+//                        parkingInfoIntent.putExtra("parking_id", parkingId);
+//                        startActivity(parkingInfoIntent);
+//                    } else {
+//                        Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(ParkingRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+//                }
+
+//                if (TextUtils.isEmpty(name)) {
+//                    etName.requestFocus();
+//                    etName.setError("Parking name cannot be empty");
+//
+//                } else if (TextUtils.isEmpty(phone)) {
+//                    etPhone.requestFocus();
+//                    etPhone.setError("Parking phone no cannot be empty");
+//
+//                }
+//                else if (!TextUtils.isEmpty(bikeRate)) {
+//
+//                }
             }
         });
     }
+
+//    private boolean validateInfo(String name,String phone,int bikeRate,int threeWheelerRate,int fourWheelerRate) {
+//        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(phone))
+//    }
 
     // Function to Dispatch picture taking intent
     private void dispatchTakePictureIntent() {

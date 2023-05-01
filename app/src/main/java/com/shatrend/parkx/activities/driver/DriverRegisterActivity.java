@@ -59,6 +59,7 @@ public class DriverRegisterActivity extends AppCompatActivity {
                     if (success) {
                         Toast.makeText(DriverRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
                         Intent homeIntent = new Intent(DriverRegisterActivity.this, HomeActivity.class);
+                        startActivity(homeIntent);
                     } else {
                         Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                     }

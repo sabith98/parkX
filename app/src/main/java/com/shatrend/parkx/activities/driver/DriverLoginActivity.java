@@ -29,7 +29,6 @@ public class DriverLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_login);
 
-        tvToRegister = findViewById(R.id.activity_login_tv_to_register);
         tvToForgotPassword = findViewById(R.id.activity_login_btn_to_forgot_password);
         btnLogin = findViewById(R.id.btn_login);
         etEmail = findViewById(R.id.et_email);
@@ -37,7 +36,8 @@ public class DriverLoginActivity extends AppCompatActivity {
 
         mDatabaseHelper = new DatabaseHelper(this);
 
-        // Navigate to Register page on click
+        // Navigate to driver Register page
+        tvToRegister = findViewById(R.id.activity_login_tv_to_register);
         tvToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,9 +78,4 @@ public class DriverLoginActivity extends AppCompatActivity {
             }
         });
     }
-
-//    public void navigateToSignup() {
-//        Intent intent = new Intent(this, RegisterActivity.class);
-//        startActivity(intent);
-//    }
 }

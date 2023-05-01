@@ -33,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +45,8 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.shatrend.parkx.R;
+import com.shatrend.parkx.helpers.DatabaseHelper;
+import com.shatrend.parkx.models.ParkingLocation;
 
 import java.util.List;
 
@@ -61,6 +64,8 @@ public class MapsFragment extends Fragment {
 
     private MaterialSearchBar materialSearchBar;
     private View mapView;
+
+    private DatabaseHelper mDatabaseHelper;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -121,6 +126,9 @@ public class MapsFragment extends Fragment {
                 }
             });
 
+            // Show nearby parking locations
+
+
         }
     };
 
@@ -135,6 +143,8 @@ public class MapsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mDatabaseHelper = new DatabaseHelper(getActivity());
 
         if (isLocationPermissionGranted()) {
             SupportMapFragment mapFragment =
@@ -179,10 +189,27 @@ public class MapsFragment extends Fragment {
                     if (task.isSuccessful()) {
                         mLastKnownLocation = task.getResult();
                         if (mLastKnownLocation != null) {
+                            double latitude = mLastKnownLocation.getLatitude();
+                            double longitude = mLastKnownLocation.getLongitude();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
                                     mLastKnownLocation.getLatitude(),
                                     mLastKnownLocation.getLongitude()
                             ),18.0f));
+                            // Show nearby parking location marks
+                            List<ParkingLocation> locations = mDatabaseHelper.getNearbyParking(latitude, longitude, 0.1);
+                            for (ParkingLocation location : locations) {
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                // Need to get location from the table
+                                mMap.addMarker(new MarkerOptions().position(latLng).title("parking 1"));
+                            }
+                            if (!locations.isEmpty()) {
+                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                for (ParkingLocation location : locations) {
+                                    builder.include(new LatLng(location.getLatitude(), location.getLongitude()));
+                                }
+                                LatLngBounds bounds = builder.build();
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+                            }
                         }else {
                             LocationRequest locationRequest = LocationRequest.create();
                             locationRequest.setInterval(10000)
@@ -211,5 +238,4 @@ public class MapsFragment extends Fragment {
                 }
             });
     }
-
 }

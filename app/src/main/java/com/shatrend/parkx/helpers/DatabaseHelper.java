@@ -12,6 +12,10 @@ import com.shatrend.parkx.models.Parking;
 import com.shatrend.parkx.models.ParkingInfo;
 import com.shatrend.parkx.models.ParkingLocation;
 import com.shatrend.parkx.models.ParkingRate;
+import com.shatrend.parkx.models.ParkingSlots;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "ParkX.db";
@@ -218,7 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return -1;
     }
 
-    public boolean addParkingInfo(long parkingId, ParkingInfo pi, ParkingLocation pl, ParkingRate pr) {
+    public boolean addParkingInfo(long parkingId, ParkingInfo pi, ParkingLocation pl, ParkingRate pr, ParkingSlots ps) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // Insert data into parking info table
@@ -241,11 +245,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         parkingRateValues.put(PARKING_RATE_TABLE_COL_3WHEELER_RATE, pr.getThreeWheelerRate());
         parkingRateValues.put(PARKING_RATE_TABLE_COL_4WHEELER_RATE, pr.getFourWheelerRate());
 
+        // Insert data into parking slots table
+        ContentValues parkingSlotsValues = new ContentValues();
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_PARKING_ID, parkingId);
+
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_BIKE_SLOTS, ps.getBikeSlots());
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS, ps.getThreeWheelerSlots());
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS, ps.getFourWheelerSlots());
+
         long resultInfo = db.insert(PARKING_INFO_TABLE, null, parkingInfoValues);
         long resultLocation = db.insert(PARKING_LOCATION_TABLE, null, parkingLocationValues);
         long resultRate = db.insert(PARKING_RATE_TABLE, null, parkingRateValues);
+        long resultSlots = db.insert(PARKING_SLOTS_TABLE, null, parkingSlotsValues);
 
-        if (resultInfo != -1 & resultLocation != -1 & resultRate != -1) return true;
+        if (resultInfo != -1 & resultLocation != -1 & resultRate != -1 & resultSlots != -1) return true;
         else return false;
     }
 
@@ -276,6 +289,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return null;
     }
+
+    // Get all the nearby parking
+    public List<ParkingLocation> getNearbyParking(double latitude, double longitude, double distance) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_PARKING_ID,
+//                PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_NAME,
+                PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_LATITUDE,
+                PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_LONGITUDE
+        };
+        String selection = "parking_location.LATITUDE > ? AND parking_location.LATITUDE < ? AND parking_location.LONGITUDE > ? AND parking_location.LONGITUDE < ?";
+        String[] selectionArgs = {
+                String.valueOf(latitude - distance),
+                String.valueOf(latitude + distance),
+                String.valueOf(longitude - distance),
+                String.valueOf(longitude + distance)
+        };
+//        String tables = "PARKING_LOCATION JOIN PARKING ON PARKING_LOCATION.PARKING_ID = PARKING.PARKING_ID";
+        String tables = PARKING_INFO_TABLE + " INNER JOIN " + PARKING_LOCATION_TABLE
+                + " ON " + PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_PARKING_ID + " = "
+                + PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_PARKING_ID;
+
+        Cursor cursor = db.query(tables, projection, selection, selectionArgs, null, null, null);
+        List<ParkingLocation> locations = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("PARKING_ID"));
+//            String name = cursor.getString(cursor.getColumnIndexOrThrow(PARKING_INFO_TABLE_COL_NAME));
+            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(PARKING_LOCATION_TABLE_COL_LATITUDE));
+            double lon = cursor.getDouble(cursor.getColumnIndexOrThrow(PARKING_LOCATION_TABLE_COL_LONGITUDE));
+            locations.add(new ParkingLocation(id, lat, lon));
+        }
+        cursor.close();
+        return locations;
+    }
+
+    // Get parking details by Id
+//    public ParkingInfo getParkingById(int id) {
+//        SQLiteDatabase db = getReadableDatabase();
+//        String[] projection = {
+//                PARKING_INFO_TABLE_COL_PARKING_ID,
+//                PARKING_INFO_TABLE_COL_NAME
+//        };
+//        String selection = PARKING_INFO_TABLE_COL_PARKING_ID + " = ?";
+//        String[] selectionArgs = { String.valueOf(id) };
+//        Cursor cursor = db.query(PARKING_INFO_TABLE, projection, selection, selectionArgs, null, null, null);
+//        ParkingInfo parkingInfo = null;
+//        if (cursor.moveToNext()) {
+//            int parkingId = cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_INFO_TABLE_COL_PARKING_ID));
+//            String name = cursor.getString(cursor.getColumnIndexOrThrow(PARKING_INFO_TABLE_COL_NAME));
+//            parkingInfo = new ParkingInfo(parkingId, name);
+//        }
+//        cursor.close();
+//        return parking;
+//    }
+
 
 
 //    public Cursor readTask(){
