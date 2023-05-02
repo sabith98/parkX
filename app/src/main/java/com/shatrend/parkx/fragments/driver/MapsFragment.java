@@ -192,8 +192,8 @@ public class MapsFragment extends Fragment {
                             double latitude = mLastKnownLocation.getLatitude();
                             double longitude = mLastKnownLocation.getLongitude();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                                    mLastKnownLocation.getLatitude(),
-                                    mLastKnownLocation.getLongitude()
+                                    latitude,
+                                    longitude
                             ),18.0f));
                             // Show nearby parking location marks
                             List<ParkingLocation> locations = mDatabaseHelper.getNearbyParking(latitude, longitude, 0.1);

@@ -97,9 +97,9 @@ public class ParkingInfoActivity extends AppCompatActivity {
 
         btnGetLocation = findViewById(R.id.activity_parking_info_btn_get_location);
         btnGetLocation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getCurrentLocation();
+            @Override
+            public void onClick(View view) {
+                getCurrentLocation();
             }
         });
 

@@ -71,11 +71,11 @@
         app:layout_constraintVertical_bias="0.64" />
 
     <EditText
-        android:id="@+id/activity_parking_info_et_4wheeler"
+        android:id="@+id/activity_parking_info_et_bike"
         android:layout_width="148dp"
         android:layout_height="45dp"
         android:ems="10"
-        android:hint="Four wheeler"
+        android:hint="motor bicycle"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,11 +99,11 @@
         app:layout_constraintVertical_bias="0.794" />
 
     <EditText
-        android:id="@+id/activity_parking_info_et_bike"
+        android:id="@+id/activity_parking_info_et_4wheeler"
         android:layout_width="148dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Bike"
+        android:hint="four wheeler"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

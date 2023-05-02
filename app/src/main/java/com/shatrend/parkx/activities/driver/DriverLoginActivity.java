@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,19 +63,51 @@ public class DriverLoginActivity extends AppCompatActivity {
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                    Driver driver = mDatabaseHelper.getDriverByEmail(email);
-
-                    if (driver != null && password.equals(driver.getPassword())) {
-                        Toast.makeText(DriverLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        Intent mapsIntent = new Intent(DriverLoginActivity.this, HomeActivity.class);
-                        startActivity(mapsIntent);
-                    } else {
-                        Toast.makeText(DriverLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(DriverLoginActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+                // Validating Driver login
+                if (email.isEmpty()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email is required");
+                    return;
                 }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Invalid email format");
+                    return;
+                }
+                if (!mDatabaseHelper.isDriverEmailExist(email)) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email not registered");
+                    return;
+                }
+                if (password.isEmpty()) {
+                    etPassword.requestFocus();
+                    etPassword.setError("Password is required");
+                    return;
+                }
+
+                Driver driver = mDatabaseHelper.getDriverByEmail(email);
+
+                if (driver != null && password.equals(driver.getPassword())) {
+                    Toast.makeText(DriverLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    Intent mapsIntent = new Intent(DriverLoginActivity.this, HomeActivity.class);
+                    startActivity(mapsIntent);
+                } else {
+                    Toast.makeText(DriverLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
+                }
+
+//                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+//                    Driver driver = mDatabaseHelper.getDriverByEmail(email);
+//
+//                    if (driver != null && password.equals(driver.getPassword())) {
+//                        Toast.makeText(DriverLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+//                        Intent mapsIntent = new Intent(DriverLoginActivity.this, HomeActivity.class);
+//                        startActivity(mapsIntent);
+//                    } else {
+//                        Toast.makeText(DriverLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(DriverLoginActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
     }

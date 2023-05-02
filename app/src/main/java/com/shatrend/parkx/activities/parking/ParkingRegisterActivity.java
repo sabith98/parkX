@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,25 +43,47 @@ public class ParkingRegisterActivity extends AppCompatActivity {
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                    Parking parking = new Parking(0, email, password);
-                    long parkingIdLong = mDatabaseHelper.addParking(parking);
-                    int parkingId = (int) parkingIdLong;
-
-                    if (parkingId != -1) {
-                        Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                        Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
-                        parkingInfoIntent.putExtra("parking_id", parkingId);
-                        startActivity(parkingInfoIntent);
-                    } else {
-                        Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(ParkingRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+                // Validating Parking registration
+                if (email.isEmpty()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email is required");
+                    return;
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Invalid email format");
+                    return;
+                }
+                if (mDatabaseHelper.isParkingEmailExist(email)) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email already exists");
+                    return;
+                }
+                if (password.isEmpty()) {
+                    etPassword.requestFocus();
+                    etPassword.setError("Password is required");
+                    return;
+                }
+                String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+                if (!password.matches(passwordPattern)) {
+                    etPassword.requestFocus();
+                    etPassword.setError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character");
+                    return;
                 }
 
-//                Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
-//                startActivity(parkingInfoIntent);
+
+                Parking parking = new Parking(0, email, password);
+                long parkingIdLong = mDatabaseHelper.addParking(parking);
+                int parkingId = (int) parkingIdLong;
+
+                if (parkingId != -1) {
+                    Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                    Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
+                    parkingInfoIntent.putExtra("parking_id", parkingId);
+                    startActivity(parkingInfoIntent);
+                } else {
+                    Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

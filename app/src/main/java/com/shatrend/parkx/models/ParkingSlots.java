@@ -2,9 +2,9 @@ package com.shatrend.parkx.models;
 
 public class ParkingSlots {
     private int parkingId;
-    private int bikeSlots;
-    private int threeWheelerSlots;
-    private int fourWheelerSlots;
+    private int bikeSlots = 0;
+    private int threeWheelerSlots = 0;
+    private int fourWheelerSlots = 0;
 
     public ParkingSlots(int parkingId, int bikeSlots, int threeWheelerSlots, int fourWheelerSlots) {
         this.parkingId = parkingId;

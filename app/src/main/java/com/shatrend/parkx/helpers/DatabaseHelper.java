@@ -178,6 +178,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    // Check whether driver email existence
+    public boolean isDriverEmailExist(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = {DRIVER_TABLE_COL_1};
+        String selection = DRIVER_TABLE_COL_2 + " = ?";
+        String[] selectionArgs = {email};
+        Cursor cursor = db.query(DRIVER_TABLE, columns, selection, selectionArgs, null, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
+    }
+
     // Retrieve driver details using email for login
     public Driver getDriverByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -220,6 +232,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        return result != -1;
         if (result != -1) return result;
         else return -1;
+    }
+
+    // Check whether parking email existence
+    public boolean isParkingEmailExist(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = {PARKING_TABLE_COL_ID};
+        String selection = PARKING_TABLE_COL_EMAIL + " = ?";
+        String[] selectionArgs = {email};
+        Cursor cursor = db.query(PARKING_TABLE, columns, selection, selectionArgs, null, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
     }
 
     public boolean addParkingInfo(long parkingId, ParkingInfo pi, ParkingLocation pl, ParkingRate pr, ParkingSlots ps) {

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,20 +53,59 @@ public class DriverRegisterActivity extends AppCompatActivity {
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                    Driver driver = new Driver(0, email, password);
-                    boolean success = mDatabaseHelper.addDriver(driver);
-
-                    if (success) {
-                        Toast.makeText(DriverRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                        Intent homeIntent = new Intent(DriverRegisterActivity.this, HomeActivity.class);
-                        startActivity(homeIntent);
-                    } else {
-                        Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(DriverRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+                // Validating Driver registration
+                if (email.isEmpty()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email is required");
+                    return;
                 }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Invalid email format");
+                    return;
+                }
+                if (mDatabaseHelper.isDriverEmailExist(email)) {
+                    etEmail.requestFocus();
+                    etEmail.setError("Email already exists");
+                    return;
+                }
+                if (password.isEmpty()) {
+                    etPassword.requestFocus();
+                    etPassword.setError("Password is required");
+                    return;
+                }
+                String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+                if (!password.matches(passwordPattern)) {
+                    etPassword.requestFocus();
+                    etPassword.setError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character");
+                    return;
+                }
+
+                Driver driver = new Driver(0, email, password);
+                boolean success = mDatabaseHelper.addDriver(driver);
+
+                if (success) {
+                    Toast.makeText(DriverRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                    Intent homeIntent = new Intent(DriverRegisterActivity.this, HomeActivity.class);
+                    startActivity(homeIntent);
+                } else {
+                    Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+                }
+
+//                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+//                    Driver driver = new Driver(0, email, password);
+//                    boolean success = mDatabaseHelper.addDriver(driver);
+//
+//                    if (success) {
+//                        Toast.makeText(DriverRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+//                        Intent homeIntent = new Intent(DriverRegisterActivity.this, HomeActivity.class);
+//                        startActivity(homeIntent);
+//                    } else {
+//                        Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(DriverRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
     }
