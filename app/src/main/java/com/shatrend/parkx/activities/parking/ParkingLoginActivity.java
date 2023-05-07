@@ -78,9 +78,13 @@ public class ParkingLoginActivity extends AppCompatActivity {
 
                 Parking parking = mDatabaseHelper.getParkingByEmail(email);
                 if (parking != null && password.equals(parking.getPassword())) {
+                    int parkingId = parking.getId();
                     Toast.makeText(ParkingLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                    Intent mapsIntent = new Intent(ParkingLoginActivity.this, ParkingHomeActivity.class);
-                    startActivity(mapsIntent);
+//                    Intent mapsIntent = new Intent(ParkingLoginActivity.this, ParkingHomeActivity.class);
+//                    startActivity(mapsIntent);
+                    Intent parkingInfoIntent = new Intent(ParkingLoginActivity.this, ParkingHomeActivity.class);
+                    parkingInfoIntent.putExtra("parkingId", parkingId);
+                    startActivity(parkingInfoIntent);
                 } else {
                     Toast.makeText(ParkingLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
                 }

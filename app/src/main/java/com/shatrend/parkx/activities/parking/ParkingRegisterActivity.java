@@ -77,7 +77,7 @@ public class ParkingRegisterActivity extends AppCompatActivity {
                 if (parkingId != -1) {
                     Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
                     Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
-                    parkingInfoIntent.putExtra("parking_id", parkingId);
+                    parkingInfoIntent.putExtra("parkingId", parkingId);
                     startActivity(parkingInfoIntent);
                 } else {
                     Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();

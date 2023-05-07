@@ -121,7 +121,7 @@ public class ParkingInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = etName.getText().toString();
                 String phone = etPhone.getText().toString();
-                int parkingId = getIntent().getIntExtra("parking_id", -1);
+                int parkingId = getIntent().getIntExtra("parkingId", -1);
 
 //                double latitude = locationValues.get("latitude");
 //                double longitude = locationValues.get("longitude");
