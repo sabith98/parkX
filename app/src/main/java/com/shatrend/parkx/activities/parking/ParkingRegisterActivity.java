@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -12,13 +11,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shatrend.parkx.activities.driver.HomeActivity;
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.helpers.DatabaseHelper;
 import com.shatrend.parkx.models.Parking;
 
 public class ParkingRegisterActivity extends AppCompatActivity {
-
     private Button btnRegister;
     private EditText etEmail, etPassword;
     private TextView tvLogin;
@@ -67,10 +64,11 @@ public class ParkingRegisterActivity extends AppCompatActivity {
                 String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
                 if (!password.matches(passwordPattern)) {
                     etPassword.requestFocus();
-                    etPassword.setError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character");
+                    etPassword.setError("Password must contain at least 8 characters, " +
+                            "including one uppercase letter, one lowercase letter, one digit, " +
+                            "and one special character");
                     return;
                 }
-
 
                 Parking parking = new Parking(0, email, password);
                 long parkingIdLong = mDatabaseHelper.addParking(parking);
@@ -84,6 +82,8 @@ public class ParkingRegisterActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                 }
+
+                mDatabaseHelper.close();
             }
         });
 

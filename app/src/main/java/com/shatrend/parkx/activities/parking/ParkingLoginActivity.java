@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shatrend.parkx.activities.driver.HomeActivity;
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.helpers.DatabaseHelper;
 import com.shatrend.parkx.models.Parking;
@@ -40,7 +38,10 @@ public class ParkingLoginActivity extends AppCompatActivity {
         tvToParkingRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent parkingRegisterIntent = new Intent(ParkingLoginActivity.this, ParkingRegisterActivity.class);
+                Intent parkingRegisterIntent = new Intent(
+                        ParkingLoginActivity.this,
+                        ParkingRegisterActivity.class
+                );
                 startActivity(parkingRegisterIntent);
             }
         });
@@ -78,25 +79,13 @@ public class ParkingLoginActivity extends AppCompatActivity {
                 Parking parking = mDatabaseHelper.getParkingByEmail(email);
                 if (parking != null && password.equals(parking.getPassword())) {
                     Toast.makeText(ParkingLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                    Intent mapsIntent = new Intent(ParkingLoginActivity.this, HomeActivity.class);
+                    Intent mapsIntent = new Intent(ParkingLoginActivity.this, ParkingHomeActivity.class);
                     startActivity(mapsIntent);
                 } else {
                     Toast.makeText(ParkingLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
                 }
 
-//                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-//                    Parking parking = mDatabaseHelper.getParkingByEmail(email);
-//
-//                    if (parking != null && password.equals(parking.getPassword())) {
-//                        Toast.makeText(ParkingLoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-//                        Intent mapsIntent = new Intent(ParkingLoginActivity.this, HomeActivity.class);
-//                        startActivity(mapsIntent);
-//                    } else {
-//                        Toast.makeText(ParkingLoginActivity.this, "Invalid email or password.", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(ParkingLoginActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
-//                }
+                mDatabaseHelper.close();
             }
         });
     }

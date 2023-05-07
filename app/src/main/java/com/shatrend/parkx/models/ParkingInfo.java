@@ -16,31 +16,16 @@ public class ParkingInfo {
         return parkingId;
     }
 
-    public void setParkingId(int parkingId) {
-        this.parkingId = parkingId;
-    }
-
     public String getParkingName() {
         return parkingName;
-    }
-
-    public void setParkingName(String parkingName) {
-        this.parkingName = parkingName;
     }
 
     public String getParkingPhone() {
         return parkingPhone;
     }
 
-    public void setParkingPhone(String parkingPhone) {
-        this.parkingPhone = parkingPhone;
-    }
-
     public byte[] getParkingImage() {
         return parkingImage;
     }
 
-    public void setParkingImage(byte[] parkingImage) {
-        this.parkingImage = parkingImage;
-    }
 }

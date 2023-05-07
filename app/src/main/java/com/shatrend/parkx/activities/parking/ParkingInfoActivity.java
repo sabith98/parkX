@@ -6,17 +6,20 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.activities.driver.HomeActivity;
+import com.shatrend.parkx.fragments.parking.ParkingHomeFragment;
 import com.shatrend.parkx.helpers.DatabaseHelper;
 import com.shatrend.parkx.models.Parking;
 import com.shatrend.parkx.models.ParkingInfo;
@@ -44,6 +48,9 @@ import java.util.Map;
 public class ParkingInfoActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
+
+    private LocationManager locationManager;
+    private Location myLocation;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_PICK = 2;
@@ -65,6 +72,7 @@ public class ParkingInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_parking_info);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         ivImage = findViewById(R.id.activity_parking_info_iv_image);
         etName = findViewById(R.id.activity_parking_info_et_name);
@@ -99,7 +107,11 @@ public class ParkingInfoActivity extends AppCompatActivity {
         btnGetLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getCurrentLocation();
+                myLocation = getLocation();
+                tvLocationInfo.setText(
+                        "Latitude: " + myLocation.getLatitude() + "\n"
+                        + "Longitude: " + myLocation.getLongitude()
+                );
             }
         });
 
@@ -110,22 +122,69 @@ public class ParkingInfoActivity extends AppCompatActivity {
                 String name = etName.getText().toString();
                 String phone = etPhone.getText().toString();
                 int parkingId = getIntent().getIntExtra("parking_id", -1);
-//                int parkingId = (int) parkingIdLong;
 
 //                double latitude = locationValues.get("latitude");
 //                double longitude = locationValues.get("longitude");
 
-                double latitude = 8.720167;
-                double longitude = 81.173362;
+                double latitude = myLocation.getLatitude();
+                double longitude = myLocation.getLongitude();
+
+                // Inserting dummy location data for 3rd progress review only
+//                double latitude = 8.720183;
+//                double longitude = 81.174187;
 
                 String bikeRateStr = etBike.getText().toString();
-                int bikeRate = Integer.parseInt(etBike.getText().toString());
-                int threeWheelerRate = Integer.parseInt(et3wheeler.getText().toString());
-                int fourWheelerRate = Integer.parseInt(et4wheeler.getText().toString());
+                String threeWheelerRateStr = et3wheeler.getText().toString();
+                String fourWheelerRateStr = et3wheeler.getText().toString();
 
-                int bikeSlots = Integer.parseInt(etBikeSlots.getText().toString());
-                int threeWheelerSlots = Integer.parseInt(et3wheelerSlots.getText().toString());
-                int fourWheelerSlots = Integer.parseInt(et4wheelerSlots.getText().toString());
+                String bikeSlotsStr = etBikeSlots.getText().toString();
+                String threeWheelerSlotsStr = etBikeSlots.getText().toString();
+                String fourWheelerSlotsStr = etBikeSlots.getText().toString();
+
+                // Assigning 0 if there was no input given
+                int bikeRate = 0;
+                if (!bikeRateStr.isEmpty()) {
+                    bikeRate = Integer.parseInt(etBike.getText().toString());
+
+//                    etBike.requestFocus();
+//                    etBike.setText("0");
+//                    return;
+                }
+                int bikeSlots = 0;
+                if (!bikeSlotsStr.isEmpty()) {
+                    bikeSlots = Integer.parseInt(etBikeSlots.getText().toString());
+//                    etBikeSlots.requestFocus();
+//                    etBikeSlots.setText("0");
+//                    return;
+                }
+                int threeWheelerRate = 0;
+                if (!threeWheelerRateStr.isEmpty()) {
+                    threeWheelerRate = Integer.parseInt(et3wheeler.getText().toString());
+//                    et3wheeler.requestFocus();
+//                    et3wheeler.setText("0");
+//                    return;
+                }
+                int threeWheelerSlots = 0;
+                if (!threeWheelerSlotsStr.isEmpty()) {
+                    threeWheelerSlots = Integer.parseInt(et3wheelerSlots.getText().toString());
+//                    et3wheelerSlots.requestFocus();
+//                    et3wheelerSlots.setText("0");
+//                    return;
+                }
+                int fourWheelerRate = 0;
+                if (!fourWheelerRateStr.isEmpty()) {
+                    fourWheelerRate = Integer.parseInt(et4wheeler.getText().toString());
+//                    et4wheeler.requestFocus();
+//                    et4wheeler.setText("0");
+//                    return;
+                }
+                int fourWheelerSlots = 0;
+                if (!fourWheelerSlotsStr.isEmpty()) {
+                    fourWheelerSlots = Integer.parseInt(et4wheelerSlots.getText().toString());
+//                    et4wheelerSlots.requestFocus();
+//                    et4wheelerSlots.setText("0");
+//                    return;
+                }
 
                 ParkingInfo parkingInfo = new ParkingInfo(parkingId,name,phone,parkingImageBytes);
                 ParkingLocation parkingLocation = new ParkingLocation(parkingId,latitude,longitude);
@@ -136,47 +195,15 @@ public class ParkingInfoActivity extends AppCompatActivity {
 
                 if (success) {
                     Toast.makeText(ParkingInfoActivity.this, "Parking info updated", Toast.LENGTH_SHORT).show();
-                    Intent homeIntent = new Intent(ParkingInfoActivity.this, HomeActivity.class);
+                    Intent homeIntent = new Intent(ParkingInfoActivity.this, ParkingHomeActivity.class);
+                    homeIntent.putExtra("parkingId", parkingId);
                     startActivity(homeIntent);
                 } else {
                     Toast.makeText(ParkingInfoActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
                 }
-//                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(phone)) {
-//                    Parking parking = new Parking(0, email, password);
-//                    long parkingIdLong = mDatabaseHelper.addParking(parking);
-//                    int parkingId = (int) parkingIdLong;
-//
-//                    if (parkingId != -1) {
-//                        Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-//                        Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
-//                        parkingInfoIntent.putExtra("parking_id", parkingId);
-//                        startActivity(parkingInfoIntent);
-//                    } else {
-//                        Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(ParkingRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
-//                }
-
-//                if (TextUtils.isEmpty(name)) {
-//                    etName.requestFocus();
-//                    etName.setError("Parking name cannot be empty");
-//
-//                } else if (TextUtils.isEmpty(phone)) {
-//                    etPhone.requestFocus();
-//                    etPhone.setError("Parking phone no cannot be empty");
-//
-//                }
-//                else if (!TextUtils.isEmpty(bikeRate)) {
-//
-//                }
             }
         });
     }
-
-//    private boolean validateInfo(String name,String phone,int bikeRate,int threeWheelerRate,int fourWheelerRate) {
-//        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(phone))
-//    }
 
     // Function to Dispatch picture taking intent
     private void dispatchTakePictureIntent() {
@@ -211,10 +238,6 @@ public class ParkingInfoActivity extends AppCompatActivity {
 
             parkingImageBytes = imageToBytes(imageBitmap);
 
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//            byte[] imageBytes = stream.toByteArray();
-
         } else if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK) {
             Uri selectedImageUri = data.getData();
             String[] projection = {MediaStore.Images.Media.DATA};
@@ -245,39 +268,66 @@ public class ParkingInfoActivity extends AppCompatActivity {
     }
 
     // Function to Get the current location of the parking
-    @SuppressLint("MissingPermission")
-    private void getCurrentLocation() {
-        // Check for location permissions
-        if (ContextCompat.checkSelfPermission(ParkingInfoActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            // Get the last known location
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                double latitude = location.getLatitude();
-                                double longitude = location.getLongitude();
-                                String locationString = "Latitude: " + latitude +
-                                        "\nLongitude: " + longitude;
-                                tvLocationInfo.setText(locationString);
+//    @SuppressLint("MissingPermission")
+//    private void getCurrentLocation() {
+//        // Check for location permissions
+//        if (ContextCompat.checkSelfPermission(ParkingInfoActivity.this,
+//                Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            // Get the last known location
+//            fusedLocationClient.getLastLocation()
+//                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+//                        @Override
+//                        public void onSuccess(Location location) {
+//                            Log.d("LOCATION", String.valueOf(location));
+////                            Log.d("LATITUDE", String.valueOf(location.getLatitude()));
+////                            Log.d("LONGITUDE", String.valueOf(location.getLongitude()));
+//                            if (location != null) {
+//                                double latitude = location.getLatitude();
+//                                double longitude = location.getLongitude();
+//                                String locationString = "Latitude: " + latitude +
+//                                        "\nLongitude: " + longitude;
+//                                tvLocationInfo.setText(locationString);
+//
+//                                locationValues.put("latitude", latitude);
+//                                locationValues.put("longitude", longitude);
+//
+//                            } else {
+//                                tvLocationInfo.setText("Location is null");
+//                            }
+//                        }
+//                    });
+//        } else {
+//            // Request location permissions
+//            ActivityCompat.requestPermissions(ParkingInfoActivity.this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    1);
+//        }
+//    }
 
-                                locationValues.put("latitude", latitude);
-                                locationValues.put("longitude", longitude);
-
-                            } else {
-                                tvLocationInfo.setText("Location is null");
-                            }
-                        }
-                    });
-        } else {
-            // Request location permissions
-            ActivityCompat.requestPermissions(ParkingInfoActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
+    public Location getLocation() {
+        // Check if location permissions are granted
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions if not granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return null;
         }
-//        return locationValues;
-    }
 
+        // Get last known location
+        @SuppressLint("MissingPermission") Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        Log.d("LAST_KNOWN_LOCATION", String.valueOf(lastKnownLocation));
+        // Update UI with current location
+        if (lastKnownLocation != null) {
+            double latitude = lastKnownLocation.getLatitude();
+            double longitude = lastKnownLocation.getLongitude();
+            Location currentLocation = new Location("");
+            currentLocation.setLatitude(latitude);
+            currentLocation.setLongitude(longitude);
+            return currentLocation;
+        } else {
+            Toast.makeText(this, "Could not get current location", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
 }

@@ -49,5 +49,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
-    implementation 'com.google.android.libraries.places:places:3.0.0'
+    implementation 'com.google.android.libraries.places:places:3.1.0'
 }

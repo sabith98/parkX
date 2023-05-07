@@ -15,31 +15,16 @@ public class ParkingRate {
         return parkingId;
     }
 
-    public void setParkingId(int parkingId) {
-        this.parkingId = parkingId;
-    }
-
     public int getBikeRate() {
         return bikeRate;
-    }
-
-    public void setBikeRate(int bikeRate) {
-        this.bikeRate = bikeRate;
     }
 
     public int getThreeWheelerRate() {
         return threeWheelerRate;
     }
 
-    public void setThreeWheelerRate(int threeWheelerRate) {
-        this.threeWheelerRate = threeWheelerRate;
-    }
-
     public int getFourWheelerRate() {
         return fourWheelerRate;
     }
 
-    public void setFourWheelerRate(int fourWheelerRate) {
-        this.fourWheelerRate = fourWheelerRate;
-    }
 }

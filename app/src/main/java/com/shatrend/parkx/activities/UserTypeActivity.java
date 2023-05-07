@@ -10,7 +10,9 @@ import android.widget.Button;
 
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.activities.driver.DriverLoginActivity;
+import com.shatrend.parkx.activities.parking.ParkingInfoActivity;
 import com.shatrend.parkx.activities.parking.ParkingLoginActivity;
+import com.shatrend.parkx.models.ParkingInfo;
 
 public class UserTypeActivity extends AppCompatActivity {
 
@@ -39,6 +41,7 @@ public class UserTypeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent provideIntent = new Intent(UserTypeActivity.this, ParkingLoginActivity.class);
+//                Intent provideIntent = new Intent(UserTypeActivity.this, ParkingInfoActivity.class);
                 startActivity(provideIntent);
             }
         });

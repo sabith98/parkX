@@ -125,10 +125,6 @@ public class MapsFragment extends Fragment {
                     }
                 }
             });
-
-            // Show nearby parking locations
-
-
         }
     };
 

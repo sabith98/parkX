@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.shatrend.parkx.models.Driver;
 import com.shatrend.parkx.models.Parking;
@@ -62,7 +63,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS = "THREE_WHEELER_SLOTS";
     public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS = "FOUR_WHEELER_SLOTS";
 
-
     // Queries for creating new Tables
     public static final String DRIVER_TABLE_CREATE_QUERY = "CREATE TABLE " + DRIVER_TABLE
             + "(" + DRIVER_TABLE_COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -77,14 +77,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + PARKING_INFO_TABLE_COL_PHONE + " TEXT, "
                 + PARKING_INFO_TABLE_COL_NAME + " TEXT, "
                 + PARKING_INFO_TABLE_COL_IMAGE + " BLOB, "
-                + "FOREIGN KEY(" + PARKING_INFO_TABLE_COL_PARKING_ID + ") " + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ")"
-                + ")";
-
-//    public static final String CREATE_PARKING_LOCATION_TABLE_QUERY = "CREATE TABLE " + PARKING_LOCATION_TABLE +
-//            "(" + PARKING_LOCATION_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
-//            + "FOREIGN KEY(" + PARKING_LOCATION_TABLE_COL_PARKING_ID + ") "+ "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + "),"
-//            + PARKING_LOCATION_TABLE_COL_LATITUDE + " REAL, "
-//            + PARKING_LOCATION_TABLE_COL_LONGITUDE + " REAL" + ")";
+                + "FOREIGN KEY(" + PARKING_INFO_TABLE_COL_PARKING_ID + ") "
+                + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ")"
+            + ")";
 
     public static final String CREATE_PARKING_LOCATION_TABLE_QUERY = "CREATE TABLE " + PARKING_LOCATION_TABLE +
             " (" + PARKING_LOCATION_TABLE_COL_PARKING_ID + " INTEGER PRIMARY KEY, "
@@ -99,7 +94,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + PARKING_RATE_TABLE_COL_BIKE_RATE + " REAL, "
             + PARKING_RATE_TABLE_COL_3WHEELER_RATE + " REAL, "
             + PARKING_RATE_TABLE_COL_4WHEELER_RATE + " REAL, "
-            + "FOREIGN KEY(" + PARKING_RATE_TABLE_COL_PARKING_ID + ") REFERENCES " + PARKING_TABLE + "(" + PARKING_TABLE_COL_ID + ")"
+            + "FOREIGN KEY(" + PARKING_RATE_TABLE_COL_PARKING_ID + ") REFERENCES "
+            + PARKING_TABLE + "(" + PARKING_TABLE_COL_ID + ")"
             + ")";
 
     public static final String CREATE_PARKING_SLOTS_TABLE_QUERY = "CREATE TABLE " + PARKING_SLOTS_TABLE +
@@ -110,7 +106,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY (" + PARKING_SLOTS_TABLE_COL_PARKING_ID + ") "
             + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ") "
             + ")";
-
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -138,32 +133,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-//    public boolean createTask(String name){
-//        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(COL_2, name);
-//        long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
-//        if(result == -1){
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-
-    // Register new driver account
-//    public boolean registerDriver(String email, String password) {
-//        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(DRIVER_TABLE_COL_2, email);
-//        contentValues.put(DRIVER_TABLE_COL_3, password);
-//        long result = sqLiteDatabase.insert(DRIVER_TABLE, null, contentValues);
-//        if (result == -1) {
-//            return false;
-//        }else {
-//            return true;
-//        }
-//    }
-
     // Register new driver account
     public boolean addDriver(Driver driver) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -187,6 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(DRIVER_TABLE, columns, selection, selectionArgs, null, null, null);
         int count = cursor.getCount();
         cursor.close();
+
         return count > 0;
     }
 
@@ -202,19 +172,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor != null) {
             cursor.moveToFirst();
-
             @SuppressLint("Range") Driver driver = new Driver(
                     cursor.getInt(cursor.getColumnIndex(DRIVER_TABLE_COL_1)),
                     cursor.getString(cursor.getColumnIndex(DRIVER_TABLE_COL_2)),
                     cursor.getString(cursor.getColumnIndex(DRIVER_TABLE_COL_3))
             );
-
             cursor.close();
             db.close();
 
             return driver;
         }
-
         return null;
     }
 
@@ -234,7 +201,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return -1;
     }
 
-    // Check whether parking email existence
+    // Check whether parking email already exists
     public boolean isParkingEmailExist(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {PARKING_TABLE_COL_ID};
@@ -243,9 +210,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(PARKING_TABLE, columns, selection, selectionArgs, null, null, null);
         int count = cursor.getCount();
         cursor.close();
+
         return count > 0;
     }
 
+    // Store parking information in db
     public boolean addParkingInfo(long parkingId, ParkingInfo pi, ParkingLocation pl, ParkingRate pr, ParkingSlots ps) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -298,28 +267,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor != null) {
             cursor.moveToFirst();
-
             @SuppressLint("Range") Parking parking = new Parking(
                     cursor.getInt(cursor.getColumnIndex(PARKING_TABLE_COL_ID)),
                     cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_EMAIL)),
                     cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_PASSWORD))
             );
-
             cursor.close();
             db.close();
 
             return parking;
         }
-
         return null;
     }
 
-    // Get all the nearby parking
+    // Retrieve parking slots count details from PARKING_SLOTS table
+    public ParkingSlots getParkingSlots(int parkingId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(PARKING_SLOTS_TABLE,
+                new String[] {
+                        PARKING_SLOTS_TABLE_COL_PARKING_ID,
+                        PARKING_SLOTS_TABLE_COL_BIKE_SLOTS,
+                        PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS,
+                        PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS
+                },
+                PARKING_SLOTS_TABLE_COL_PARKING_ID + " = ?",
+                new String[] {String.valueOf(parkingId)},
+                null, null, null, null);
+
+        Log.d("PARKING_SPOTS_ROWS", String.valueOf(cursor.getCount()));
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            @SuppressLint("Range") ParkingSlots parkingSlots = new ParkingSlots(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_PARKING_ID)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_BIKE_SLOTS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS))
+            );
+            cursor.close();
+            db.close();
+
+            return parkingSlots;
+        }
+        return null;
+    }
+
+    // Get all the nearby parking location data
     public List<ParkingLocation> getNearbyParking(double latitude, double longitude, double distance) {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {
                 PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_PARKING_ID,
-//                PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_NAME,
                 PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_LATITUDE,
                 PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_LONGITUDE
         };
@@ -330,7 +328,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String.valueOf(longitude - distance),
                 String.valueOf(longitude + distance)
         };
-//        String tables = "PARKING_LOCATION JOIN PARKING ON PARKING_LOCATION.PARKING_ID = PARKING.PARKING_ID";
         String tables = PARKING_INFO_TABLE + " INNER JOIN " + PARKING_LOCATION_TABLE
                 + " ON " + PARKING_INFO_TABLE + "." + PARKING_INFO_TABLE_COL_PARKING_ID + " = "
                 + PARKING_LOCATION_TABLE + "." + PARKING_LOCATION_TABLE_COL_PARKING_ID;
@@ -347,50 +344,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return locations;
     }
-
-    // Get parking details by Id
-//    public ParkingInfo getParkingById(int id) {
-//        SQLiteDatabase db = getReadableDatabase();
-//        String[] projection = {
-//                PARKING_INFO_TABLE_COL_PARKING_ID,
-//                PARKING_INFO_TABLE_COL_NAME
-//        };
-//        String selection = PARKING_INFO_TABLE_COL_PARKING_ID + " = ?";
-//        String[] selectionArgs = { String.valueOf(id) };
-//        Cursor cursor = db.query(PARKING_INFO_TABLE, projection, selection, selectionArgs, null, null, null);
-//        ParkingInfo parkingInfo = null;
-//        if (cursor.moveToNext()) {
-//            int parkingId = cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_INFO_TABLE_COL_PARKING_ID));
-//            String name = cursor.getString(cursor.getColumnIndexOrThrow(PARKING_INFO_TABLE_COL_NAME));
-//            parkingInfo = new ParkingInfo(parkingId, name);
-//        }
-//        cursor.close();
-//        return parking;
-//    }
-
-
-
-//    public Cursor readTask(){
-//        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-//        Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME,null);
-//        return result;
-//    }
-
-//    public boolean updateTasks(String id, String name){
-//        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(COL_1, id);
-//        contentValues.put(COL_2, name);
-//        long count = sqLiteDatabase.update(TABLE_NAME, contentValues, "Task_ID = ?", new String[]{id});
-//        if(count > 0){
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-
-//    public int deleteTasks(String id){
-//        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-//        return sqLiteDatabase.delete(TABLE_NAME, "Task_ID = ? ", new String[]{id});
-//    }
 }

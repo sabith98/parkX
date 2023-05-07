@@ -77,7 +77,8 @@ public class DriverRegisterActivity extends AppCompatActivity {
                 String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
                 if (!password.matches(passwordPattern)) {
                     etPassword.requestFocus();
-                    etPassword.setError("Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character");
+                    etPassword.setError("Password must contain at least 8 characters, including one uppercase letter, " +
+                            "one lowercase letter, one digit, and one special character");
                     return;
                 }
 
@@ -91,21 +92,6 @@ public class DriverRegisterActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                 }
-
-//                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-//                    Driver driver = new Driver(0, email, password);
-//                    boolean success = mDatabaseHelper.addDriver(driver);
-//
-//                    if (success) {
-//                        Toast.makeText(DriverRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-//                        Intent homeIntent = new Intent(DriverRegisterActivity.this, HomeActivity.class);
-//                        startActivity(homeIntent);
-//                    } else {
-//                        Toast.makeText(DriverRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(DriverRegisterActivity.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
-//                }
             }
         });
     }
