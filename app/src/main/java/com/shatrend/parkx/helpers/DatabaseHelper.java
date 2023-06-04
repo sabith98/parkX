@@ -63,6 +63,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS = "THREE_WHEELER_SLOTS";
     public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS = "FOUR_WHEELER_SLOTS";
 
+    public static final String PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS = "BIKE_FREE_SLOTS";
+    public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS = "THREE_WHEELER_FREE_SLOTS";
+    public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS = "FOUR_WHEELER_FREE_SLOTS";
+
     // Queries for creating new Tables
     public static final String DRIVER_TABLE_CREATE_QUERY = "CREATE TABLE " + DRIVER_TABLE
             + "(" + DRIVER_TABLE_COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -103,6 +107,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + PARKING_SLOTS_TABLE_COL_BIKE_SLOTS + " INTEGER, "
             + PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS + " INTEGER, "
             + PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS + " INTEGER, "
+            + PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS + " INTEGER, "
+            + PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS + " INTEGER, "
+            + PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS + " INTEGER, "
             + "FOREIGN KEY (" + PARKING_SLOTS_TABLE_COL_PARKING_ID + ") "
             + "REFERENCES " + PARKING_TABLE + "( " + PARKING_TABLE_COL_ID + ") "
             + ")";
@@ -246,6 +253,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS, ps.getThreeWheelerSlots());
         parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS, ps.getFourWheelerSlots());
 
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS, ps.getBikeFreeSlots());
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS, ps.getThreeWheelerFreeSlots());
+        parkingSlotsValues.put(PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS, ps.getFourWheelerFreeSlots());
+
         long resultInfo = db.insert(PARKING_INFO_TABLE, null, parkingInfoValues);
         long resultLocation = db.insert(PARKING_LOCATION_TABLE, null, parkingLocationValues);
         long resultRate = db.insert(PARKING_RATE_TABLE, null, parkingRateValues);
@@ -289,7 +300,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         PARKING_SLOTS_TABLE_COL_PARKING_ID,
                         PARKING_SLOTS_TABLE_COL_BIKE_SLOTS,
                         PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS,
-                        PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS
+                        PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS,
+                        PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS,
+                        PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS,
+                        PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS
                 },
                 PARKING_SLOTS_TABLE_COL_PARKING_ID + " = ?",
                 new String[] {String.valueOf(parkingId)},
@@ -303,7 +317,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_PARKING_ID)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_BIKE_SLOTS)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS))
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS))
             );
             cursor.close();
             db.close();
@@ -344,4 +361,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return locations;
     }
+
+    // Update Bike free slots count
+    public int updateFreeBikeCount(int parkingId, int newBikeCount) {
+        // Get a writable database instance
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // PARKING SLOTS TABLE columns
+//        public static final String PARKING_SLOTS_TABLE_COL_PARKING_ID = "PARKING_ID";
+//        public static final String PARKING_SLOTS_TABLE_COL_BIKE_SLOTS = "BIKE_SLOTS";
+//        public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_SLOTS = "THREE_WHEELER_SLOTS";
+//        public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_SLOTS = "FOUR_WHEELER_SLOTS";
+//
+//        public static final String PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS = "BIKE_FREE_SLOTS";
+//        public static final String PARKING_SLOTS_TABLE_COL_3WHEELER_FREE_SLOTS = "THREE_WHEELER_FREE_SLOTS";
+//        public static final String PARKING_SLOTS_TABLE_COL_4WHEELER_FREE_SLOTS = "FOUR_WHEELER_FREE_SLOTS";
+//
+        // Update the bike count
+        ContentValues values = new ContentValues();
+        values.put(PARKING_SLOTS_TABLE_COL_BIKE_FREE_SLOTS, newBikeCount);
+
+        String selection = PARKING_SLOTS_TABLE_COL_PARKING_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(parkingId)};
+
+        int rowsAffected = db.update(PARKING_SLOTS_TABLE, values, selection, selectionArgs);
+
+        return rowsAffected;
+    }
+
 }

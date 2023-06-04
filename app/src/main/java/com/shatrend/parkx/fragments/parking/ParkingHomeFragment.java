@@ -1,6 +1,7 @@
 package com.shatrend.parkx.fragments.parking;
 
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.adapters.ParkingSlotsHandlerCardAdapter;
@@ -26,11 +29,18 @@ import java.util.List;
  * Use the {@link ParkingHomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ParkingHomeFragment extends Fragment {
+public class ParkingHomeFragment extends Fragment implements ParkingSlotsHandlerCardAdapter.OnDataChangeListener {
 
     private RecyclerView recyclerView;
     private DatabaseHelper mDatabaseHelper;
     private int parkingId;
+
+    ParkingSlots parkingSlots;
+
+    //    Test
+    private Button btnTest;
+
+    ParkingSlotsHandlerCardAdapter adapter;
 
     private TextView tvFreeBikeSlots, tvFree3wheelerSlots, tvFree4wheelerSlots;
 
@@ -86,11 +96,23 @@ public class ParkingHomeFragment extends Fragment {
         parkingId = getActivity().getIntent().getIntExtra("parkingId", -1);
 //
         // Set available vehicle slots
-        ParkingSlots parkingSlots = mDatabaseHelper.getParkingSlots(parkingId);
+        parkingSlots = mDatabaseHelper.getParkingSlots(parkingId);
 
-        tvFreeBikeSlots.setText(String.valueOf(parkingSlots.getBikeSlots()));
-        tvFree3wheelerSlots.setText(String.valueOf(parkingSlots.getThreeWheelerSlots()));
-        tvFree4wheelerSlots.setText(String.valueOf(parkingSlots.getFourWheelerSlots()));
+        int bikeFreeSlots = parkingSlots.getBikeFreeSlots();
+        int threeWheelerFreeSlots = parkingSlots.getThreeWheelerFreeSlots();
+        int fourWheelerFreeSlots = parkingSlots.getFourWheelerFreeSlots();
+//        tvFreeBikeSlots.setText(String.valueOf(parkingSlots.getBikeSlots()));
+//        tvFree3wheelerSlots.setText(String.valueOf(parkingSlots.getThreeWheelerSlots()));
+//        tvFree4wheelerSlots.setText(String.valueOf(parkingSlots.getFourWheelerSlots()));
+
+        tvFreeBikeSlots.setText(String.valueOf(bikeFreeSlots));
+        tvFree3wheelerSlots.setText(String.valueOf(threeWheelerFreeSlots));
+        tvFree4wheelerSlots.setText(String.valueOf(fourWheelerFreeSlots));
+
+        List<Integer> vehicleSlots = new ArrayList<>();
+        vehicleSlots.add(parkingSlots.getBikeFreeSlots());
+        vehicleSlots.add(parkingSlots.getThreeWheelerFreeSlots());
+        vehicleSlots.add(parkingSlots.getFourWheelerFreeSlots());
 
         // Draw the recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -100,9 +122,73 @@ public class ParkingHomeFragment extends Fragment {
         cards.add(new ParkingSlotsHandlerCardAdapter.Card("Three wheeler"));
         cards.add(new ParkingSlotsHandlerCardAdapter.Card("Four wheeler"));
 
-        ParkingSlotsHandlerCardAdapter adapter = new ParkingSlotsHandlerCardAdapter(cards);
+        adapter = new ParkingSlotsHandlerCardAdapter(getContext(),cards);
+//        adapter.setListener()
         recyclerView.setAdapter(adapter);
+//        tvFreeBikeSlots.setText(String.valueOf(adapter.getBikeFreeSlots()));
+
+        //        Test
+        btnTest = view.findViewById(R.id.test);
+        btnTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("TEST", "test: working");
+                ParkingSlots freeVehicleSlots = mDatabaseHelper.getParkingSlots(parkingId);
+                int freeBikeSlots = freeVehicleSlots.getBikeFreeSlots();
+                freeBikeSlots -= 1;
+                int rowsAffected = mDatabaseHelper.updateFreeBikeCount(parkingId, freeBikeSlots);
+
+                if (rowsAffected > 0) {
+                    Toast.makeText(getActivity(), "Bike count updated successfully.", Toast.LENGTH_SHORT).show();
+                    ParkingSlots updatedParkingSlots = mDatabaseHelper.getParkingSlots(parkingId);
+                    tvFreeBikeSlots.setText(String.valueOf(updatedParkingSlots.getBikeFreeSlots()));
+                } else {
+                    Toast.makeText(getActivity(), "Failed to update bike count.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         return view;
     }
+
+    public void onBikeCountChange(String newCount) {
+        tvFreeBikeSlots.setText(newCount);
+    }
+
+    @Override
+    public void onDataChanged(int bikeFreeSlots) {
+//        tvFreeBikeSlots.setText(String.valueOf(bikeFreeSlots));
+//        mDatabaseHelper.getParkingSlots(parkingId);
+    }
+
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        tvFreeBikeSlots.setText(String.valueOf(adapter.getBikeFreeSlots()));
+//    }
+
+    // Function to Fill or Free vehicle slots
+    public void updateVehicleSlots() {
+        Log.d("UVS", "updateVehicleSlots: ");
+//        ParkingSlots freeVehicleSlots = mDatabaseHelper.getParkingSlots(parkingId);
+//        int bikeFreeSlots = freeVehicleSlots.getBikeFreeSlots();
+//        int bikeFreeSlots = 500;
+//        int rowsAffected = mDatabaseHelper.updateFreeBikeCount(parkingId, 900);
+
+        ParkingSlots freeVehicleSlots = mDatabaseHelper.getParkingSlots(parkingId);
+        int freeBikeSlots = freeVehicleSlots.getBikeFreeSlots();
+        freeBikeSlots -= 1;
+        int rowsAffected = mDatabaseHelper.updateFreeBikeCount(parkingId, freeBikeSlots);
+
+        if (rowsAffected > 0) {
+            Toast.makeText(getActivity(), "Bike count updated successfully.", Toast.LENGTH_SHORT).show();
+            ParkingSlots updatedParkingSlots = mDatabaseHelper.getParkingSlots(parkingId);
+            tvFreeBikeSlots.setText(String.valueOf(updatedParkingSlots.getBikeFreeSlots()));
+        } else {
+            Toast.makeText(getActivity(), "Failed to update bike count.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

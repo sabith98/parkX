@@ -1,5 +1,6 @@
 package com.shatrend.parkx.activities.parking;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -29,6 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.shatrend.parkx.R;
@@ -47,10 +51,13 @@ import java.util.Map;
 
 public class ParkingInfoActivity extends AppCompatActivity {
 
+    private static final int PERMISSION_REQUEST_CODE = 123;
     private FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
 
     private LocationManager locationManager;
-    private Location myLocation;
+    private Location myLocation = new Location("provider");
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_PICK = 2;
@@ -107,13 +114,50 @@ public class ParkingInfoActivity extends AppCompatActivity {
         btnGetLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myLocation = getLocation();
-                tvLocationInfo.setText(
-                        "Latitude: " + myLocation.getLatitude() + "\n"
-                        + "Longitude: " + myLocation.getLongitude()
-                );
+//                myLocation = getLocation();
+//                ***
+                requestLocationUpdates();
+//                if (myLocation != null) {
+//                    tvLocationInfo.setText(
+//                            "Latitude: " + myLocation.getLatitude() + "\n"
+//                                    + "Longitude: " + myLocation.getLongitude()
+//                    );
+//                }
+//                else {
+//                    tvLocationInfo.setText("Try again");
+//                    tvLocationInfo.setError("Try again");
+//                }
+
             }
         });
+
+        //        ***
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                Location location = locationResult.getLastLocation();
+                // Handle the received location
+//                Toast.makeText(ParkingInfoActivity.this, "Latitude: " + location.getLatitude() +
+//                        "\nLongitude: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
+                myLocation.setLatitude(location.getLatitude());
+                myLocation.setLongitude(location.getLongitude());
+
+                tvLocationInfo.setText(
+                        "Latitude: " + location.getLatitude() + "\n"
+                        + "Longitude: " + location.getLongitude()
+                );
+            }
+        };
+//      ***
 
         btnUpdate = findViewById(R.id.activity_parking_info_btn_update);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -330,4 +374,39 @@ public class ParkingInfoActivity extends AppCompatActivity {
             return null;
         }
     }
+
+//    ***
+    @SuppressLint("MissingPermission")
+    private void requestLocationUpdates() {
+        // Check if permission is granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        } else {
+            // Request permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestLocationUpdates();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Stop receiving location updates
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
 }
