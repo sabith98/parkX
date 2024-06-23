@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866308411432",
+    "project_id": "parkx-cdf68",
+    "storage_bucket": "parkx-cdf68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866308411432:android:f61db0b466a3752d70e51d",
+        "android_client_info": {
+          "package_name": "com.shatrend.parkx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAogbTcD3oOU2N5u7kH4SM4_1sP0v5E7_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
