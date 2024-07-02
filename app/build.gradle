@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.shatrend.parkx'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.shatrend.parkx"
-        minSdk 21
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"

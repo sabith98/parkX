@@ -12,6 +12,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,12 +45,18 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.helpers.DatabaseHelper;
+import com.shatrend.parkx.models.Parking;
 import com.shatrend.parkx.models.ParkingLocation;
 
 import java.util.List;
+import java.util.Map;
 
 public class MapsFragment extends Fragment {
 
@@ -66,6 +74,7 @@ public class MapsFragment extends Fragment {
     private View mapView;
 
     private DatabaseHelper mDatabaseHelper;
+    private FirebaseFirestore db;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -125,8 +134,41 @@ public class MapsFragment extends Fragment {
                     }
                 }
             });
+
+            // Fetch parking locations from Firbase firestore db
+            db.collection("parkings")
+                    .get()
+                    .addOnCompleteListener(fetchTask -> {
+                        if (fetchTask.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : fetchTask.getResult()) {
+                                Parking parking = document.toObject(Parking.class);
+                                LatLng location = new LatLng(parking.getLocation().getLatitude(), parking.getLocation().getLongitude());
+                                googleMap.addMarker(new MarkerOptions().position(location).title(parking.getName()));
+                            }
+                        } else {
+                            Log.d("FETCH_LOCATION_ERROR", "Error getting documents: ", fetchTask.getException());
+                        }
+                    });
+
         }
     };
+
+//    private void fetchLocations() {
+//        db.collection("parkings")
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            Parking parking = document.toObject(Parking.class); // Assuming Parking is a model class
+//                            LatLng location = new LatLng(parking.getLocation().getLatitude(), parking.getLocation().getLongitude());
+//                            googleMap.addMarker(new MarkerOptions().position(location).title(parking.getName()));
+//                        }
+//                    } else {
+//                        Log.d(TAG, "Error getting documents: ", task.getException());
+//                    }
+//                });
+//    }
+
 
     @Nullable
     @Override
@@ -141,6 +183,7 @@ public class MapsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mDatabaseHelper = new DatabaseHelper(getActivity());
+        db = FirebaseFirestore.getInstance();
 
         if (isLocationPermissionGranted()) {
             SupportMapFragment mapFragment =

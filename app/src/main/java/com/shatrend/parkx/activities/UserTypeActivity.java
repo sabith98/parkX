@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.shatrend.parkx.R;
 import com.shatrend.parkx.activities.driver.DriverLoginActivity;
+import com.shatrend.parkx.activities.driver.HomeActivity;
 import com.shatrend.parkx.activities.parking.ParkingInfoActivity;
 import com.shatrend.parkx.activities.parking.ParkingLoginActivity;
 import com.shatrend.parkx.models.ParkingInfo;
@@ -42,8 +43,11 @@ public class UserTypeActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent searchIntent = new Intent(UserTypeActivity.this, DriverLoginActivity.class);
-                startActivity(searchIntent);
+                // Todo: uncomment searchIntent and remove homeIntent
+//                Intent searchIntent = new Intent(UserTypeActivity.this, DriverLoginActivity.class);
+//                startActivity(searchIntent);
+                Intent homeIntent = new Intent(UserTypeActivity.this, HomeActivity.class);
+                startActivity(homeIntent);
             }
         });
         btnProvide.setOnClickListener(new View.OnClickListener() {
