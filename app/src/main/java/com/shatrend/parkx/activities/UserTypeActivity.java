@@ -12,11 +12,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.shatrend.parkx.R;
-import com.shatrend.parkx.activities.driver.DriverLoginActivity;
-import com.shatrend.parkx.activities.driver.HomeActivity;
-import com.shatrend.parkx.activities.parking.ParkingInfoActivity;
+import com.shatrend.parkx.activities.customer.CustomerLoginActivity;
 import com.shatrend.parkx.activities.parking.ParkingLoginActivity;
-import com.shatrend.parkx.models.ParkingInfo;
 
 public class UserTypeActivity extends AppCompatActivity {
 
@@ -44,10 +41,10 @@ public class UserTypeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Todo: uncomment searchIntent and remove homeIntent
-//                Intent searchIntent = new Intent(UserTypeActivity.this, DriverLoginActivity.class);
-//                startActivity(searchIntent);
-                Intent homeIntent = new Intent(UserTypeActivity.this, HomeActivity.class);
-                startActivity(homeIntent);
+                Intent searchIntent = new Intent(UserTypeActivity.this, CustomerLoginActivity.class);
+                startActivity(searchIntent);
+//                Intent homeIntent = new Intent(UserTypeActivity.this, HomeActivity.class);
+//                startActivity(homeIntent);
             }
         });
         btnProvide.setOnClickListener(new View.OnClickListener() {

@@ -1,4 +1,4 @@
-package com.shatrend.parkx.activities.driver;
+package com.shatrend.parkx.activities.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 

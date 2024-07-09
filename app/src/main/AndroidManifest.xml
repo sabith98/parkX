@@ -67,7 +67,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.driver.HomeActivity"
+            android:name=".activities.customer.HomeActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
@@ -84,7 +84,7 @@
         <!-- android:value="" /> -->
         <!-- </activity> -->
         <activity
-            android:name=".activities.driver.EditUserProfileActivity"
+            android:name=".activities.customer.EditUserProfileActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -108,35 +108,35 @@
         <!-- android:exported="false" -->
         <!-- android:label="@string/title_activity_maps" /> -->
         <activity
-            android:name=".activities.driver.ResetPasswordActivity"
+            android:name=".activities.customer.ResetPasswordActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.driver.VerifyCodeActivity"
+            android:name=".activities.customer.VerifyCodeActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.driver.SendResetLinkActivity"
+            android:name=".activities.customer.SendResetLinkActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.driver.DriverRegisterActivity"
+            android:name=".activities.customer.CustomerRegisterActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.driver.DriverLoginActivity"
+            android:name=".activities.customer.CustomerLoginActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"

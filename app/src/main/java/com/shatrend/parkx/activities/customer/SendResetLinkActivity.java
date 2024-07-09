@@ -1,4 +1,4 @@
-package com.shatrend.parkx.activities.driver;
+package com.shatrend.parkx.activities.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,7 +28,7 @@ public class SendResetLinkActivity extends AppCompatActivity {
         tvToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent registerIntent = new Intent(SendResetLinkActivity.this, DriverRegisterActivity.class);
+                Intent registerIntent = new Intent(SendResetLinkActivity.this, CustomerRegisterActivity.class);
                 startActivity(registerIntent);
             }
         });
