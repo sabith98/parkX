@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:elevation="4dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/tv_parking_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Parking Name"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_parking_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price: $10"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tv_available_slots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available Slots: 5"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/btn_book"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Book"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

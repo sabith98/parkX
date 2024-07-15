@@ -48,9 +48,9 @@ public class BookingActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         parking = getIntent().getParcelableExtra("parking");
-        parkingSlots = getIntent().getParcelableArrayListExtra("parking_slots");
+//        parkingSlots = getIntent().getParcelableArrayListExtra("parking_slots");
 
-        if (parkingSlots != null) {
+        if (parking.getSlots() != null) {
             setupRealtimeUpdates();
         }
 
@@ -70,7 +70,6 @@ public class BookingActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_save_parking:
                 toggleParkingSaveState();
-//                saveParking();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -161,7 +160,7 @@ public class BookingActivity extends AppCompatActivity {
         GridLayout layoutSlots = findViewById(R.id.layout_slots);
         layoutSlots.removeAllViews();
 
-        for (Slot slot : parkingSlots) {
+        for (Slot slot : parking.getSlots()) {
             View slotView = LayoutInflater.from(this).inflate(R.layout.slot_item, layoutSlots, false);
 
             FirebaseUser currentUser = mAuth.getCurrentUser();

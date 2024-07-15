@@ -10,4 +10,11 @@
 
     <color name="lavender">#8692f7</color>
     <color name="grey">#d2d2d2</color>
+
+    <color name="background_color">#FFFFFF</color>
+    <color name="divider_color">#DDDDDD</color>
+    <color name="label_color">#757575</color>
+    <color name="text_primary">#212121</color>
+    <color name="primary">#3F51B5</color>
+    <color name="secondary">#FF4081</color>
 </resources>
