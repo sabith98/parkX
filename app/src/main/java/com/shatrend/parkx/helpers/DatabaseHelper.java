@@ -267,29 +267,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Retrieve parking details using email for login
-    public Parking getParkingByEmail(String email) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(PARKING_TABLE,
-                new String[] { PARKING_TABLE_COL_ID, PARKING_TABLE_COL_EMAIL, PARKING_TABLE_COL_PASSWORD },
-                PARKING_TABLE_COL_EMAIL + " = ?",
-                new String[] { email },
-                null, null, null, null);
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            @SuppressLint("Range") Parking parking = new Parking(
-                    cursor.getInt(cursor.getColumnIndex(PARKING_TABLE_COL_ID)),
-                    cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_EMAIL)),
-                    cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_PASSWORD))
-            );
-            cursor.close();
-            db.close();
-
-            return parking;
-        }
-        return null;
-    }
+//    public Parking getParkingByEmail(String email) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        Cursor cursor = db.query(PARKING_TABLE,
+//                new String[] { PARKING_TABLE_COL_ID, PARKING_TABLE_COL_EMAIL, PARKING_TABLE_COL_PASSWORD },
+//                PARKING_TABLE_COL_EMAIL + " = ?",
+//                new String[] { email },
+//                null, null, null, null);
+//
+//        if (cursor != null) {
+//            cursor.moveToFirst();
+//            @SuppressLint("Range") Parking parking = new Parking(
+//                    cursor.getInt(cursor.getColumnIndex(PARKING_TABLE_COL_ID)),
+//                    cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_EMAIL)),
+//                    cursor.getString(cursor.getColumnIndex(PARKING_TABLE_COL_PASSWORD))
+//            );
+//            cursor.close();
+//            db.close();
+//
+//            return parking;
+//        }
+//        return null;
+//    }
 
     // Retrieve parking slots count details from PARKING_SLOTS table
     public ParkingSlots getParkingSlots(int parkingId) {

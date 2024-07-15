@@ -1,4 +1,4 @@
-package com.shatrend.parkx.fragments.driver;
+package com.shatrend.parkx.fragments.customer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,7 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -45,18 +48,17 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.shatrend.parkx.R;
+import com.shatrend.parkx.activities.customer.BookingActivity;
 import com.shatrend.parkx.helpers.DatabaseHelper;
 import com.shatrend.parkx.models.Parking;
 import com.shatrend.parkx.models.ParkingLocation;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MapsFragment extends Fragment {
 
@@ -73,7 +75,6 @@ public class MapsFragment extends Fragment {
     private MaterialSearchBar materialSearchBar;
     private View mapView;
 
-    private DatabaseHelper mDatabaseHelper;
     private FirebaseFirestore db;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -86,7 +87,6 @@ public class MapsFragment extends Fragment {
             // Customizing google map controls
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//            mMap.getUiSettings().setZoomControlsEnabled(true);
             mMap.getUiSettings().setZoomGesturesEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
 
@@ -114,61 +114,78 @@ public class MapsFragment extends Fragment {
             SettingsClient settingsClient = LocationServices.getSettingsClient(getActivity());
             Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
 
-            task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-                @Override
-                public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                    getDeviceLocation();
-                }
-            });
+            task.addOnSuccessListener(getActivity(), locationSettingsResponse -> getDeviceLocation());
 
-            task.addOnFailureListener(getActivity(), new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    if (e instanceof ResolvableApiException) {
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        try {
-                            resolvable.startResolutionForResult(getActivity(), 51);
-                        } catch (IntentSender.SendIntentException ex) {
-                            ex.printStackTrace();
-                        }
+            task.addOnFailureListener(getActivity(), e -> {
+                if (e instanceof ResolvableApiException) {
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    try {
+                        resolvable.startResolutionForResult(getActivity(), 51);
+                    } catch (IntentSender.SendIntentException ex) {
+                        ex.printStackTrace();
                     }
                 }
             });
 
             // Fetch parking locations from Firbase firestore db
-            db.collection("parkings")
-                    .get()
-                    .addOnCompleteListener(fetchTask -> {
-                        if (fetchTask.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : fetchTask.getResult()) {
-                                Parking parking = document.toObject(Parking.class);
-                                LatLng location = new LatLng(parking.getLocation().getLatitude(), parking.getLocation().getLongitude());
-                                googleMap.addMarker(new MarkerOptions().position(location).title(parking.getName()));
-                            }
-                        } else {
-                            Log.d("FETCH_LOCATION_ERROR", "Error getting documents: ", fetchTask.getException());
-                        }
-                    });
+            fetchParkings(googleMap);
 
         }
     };
 
-//    private void fetchLocations() {
-//        db.collection("parkings")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        for (QueryDocumentSnapshot document : task.getResult()) {
-//                            Parking parking = document.toObject(Parking.class); // Assuming Parking is a model class
-//                            LatLng location = new LatLng(parking.getLocation().getLatitude(), parking.getLocation().getLongitude());
-//                            googleMap.addMarker(new MarkerOptions().position(location).title(parking.getName()));
-//                        }
-//                    } else {
-//                        Log.d(TAG, "Error getting documents: ", task.getException());
-//                    }
-//                });
-//    }
+    private void fetchParkings(GoogleMap googleMap) {
+        db.collection("parkings")
+                .get()
+                .addOnCompleteListener(fetchTask -> {
+                    if (fetchTask.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : fetchTask.getResult()) {
+                            Parking parking = Parking.fromDocumentSnapshot(document);
+                            LatLng location = new LatLng(parking.getLocation().getLatitude(), parking.getLocation().getLongitude());
+                            Marker marker = googleMap.addMarker(new MarkerOptions().position(location).title(parking.getName()));
+                            marker.setSnippet("Rs." + parking.getPrice());
+                            marker.setTag(parking);
 
+                            marker.showInfoWindow();
+                        }
+                    } else {
+                        Log.d("FETCH_LOCATION_ERROR", "Error getting documents: ", fetchTask.getException());
+                    }
+                });
+
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View infoView = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+
+                TextView tvParkingName = infoView.findViewById(R.id.tv_parking_name);
+                TextView tvParkingPrice = infoView.findViewById(R.id.tv_parking_price);
+
+                Parking parking = (Parking) marker.getTag();
+
+                if (parking != null) {
+                    tvParkingName.setText(parking.getName());
+                    tvParkingPrice.setText(marker.getSnippet());
+                }
+
+                return infoView;
+            }
+        });
+
+        googleMap.setOnInfoWindowClickListener(marker -> {
+            Parking parking = (Parking) marker.getTag();
+            if (parking != null) {
+                Intent intent = new Intent(getActivity(), BookingActivity.class);
+                intent.putExtra("parking", parking);
+                intent.putParcelableArrayListExtra("parking_slots", new ArrayList<>(parking.getSlots()));
+                startActivity(intent);
+            }
+        });
+    }
 
     @Nullable
     @Override
@@ -182,7 +199,6 @@ public class MapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDatabaseHelper = new DatabaseHelper(getActivity());
         db = FirebaseFirestore.getInstance();
 
         if (isLocationPermissionGranted()) {
@@ -202,7 +218,7 @@ public class MapsFragment extends Fragment {
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
     }
 
-    // Function for checking whether location permission granted or not
+    // Checking whether location permission granted or not
     private boolean isLocationPermissionGranted(){
         if(ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.
                 ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
@@ -212,7 +228,7 @@ public class MapsFragment extends Fragment {
             return false;
         }
     }
-    //requesting location permission
+    // Requesting location permission
     private void requestLocationPermission(){
         ActivityCompat.requestPermissions(getActivity(),new
                 String[]{Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_PERMISSION_CODE);
@@ -234,21 +250,6 @@ public class MapsFragment extends Fragment {
                                     latitude,
                                     longitude
                             ),18.0f));
-                            // Show nearby parking location marks
-                            List<ParkingLocation> locations = mDatabaseHelper.getNearbyParking(latitude, longitude, 0.1);
-                            for (ParkingLocation location : locations) {
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                // Need to get location from the table
-                                mMap.addMarker(new MarkerOptions().position(latLng).title("parking 1"));
-                            }
-                            if (!locations.isEmpty()) {
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                for (ParkingLocation location : locations) {
-                                    builder.include(new LatLng(location.getLatitude(), location.getLongitude()));
-                                }
-                                LatLngBounds bounds = builder.build();
-                                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
-                            }
                         }else {
                             LocationRequest locationRequest = LocationRequest.create();
                             locationRequest.setInterval(10000)

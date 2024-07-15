@@ -70,20 +70,20 @@ public class ParkingRegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                Parking parking = new Parking(0, email, password);
-                long parkingIdLong = mDatabaseHelper.addParking(parking);
-                int parkingId = (int) parkingIdLong;
-
-                if (parkingId != -1) {
-                    Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                    Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
-                    parkingInfoIntent.putExtra("parkingId", parkingId);
-                    startActivity(parkingInfoIntent);
-                } else {
-                    Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-                }
-
-                mDatabaseHelper.close();
+//                Parking parking = new Parking(0, email, password);
+//                long parkingIdLong = mDatabaseHelper.addParking(parking);
+//                int parkingId = (int) parkingIdLong;
+//
+//                if (parkingId != -1) {
+//                    Toast.makeText(ParkingRegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+//                    Intent parkingInfoIntent = new Intent(ParkingRegisterActivity.this, ParkingInfoActivity.class);
+//                    parkingInfoIntent.putExtra("parkingId", parkingId);
+//                    startActivity(parkingInfoIntent);
+//                } else {
+//                    Toast.makeText(ParkingRegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                mDatabaseHelper.close();
             }
         });
 
