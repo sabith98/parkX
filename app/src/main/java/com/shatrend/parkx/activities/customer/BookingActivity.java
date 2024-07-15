@@ -8,6 +8,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -33,6 +37,8 @@ public class BookingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     ListenerRegistration listenerRegistration;
+    private MenuItem saveMenuItem;
+    private boolean isParkingSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,89 @@ public class BookingActivity extends AppCompatActivity {
 
         if (parkingSlots != null) {
             setupRealtimeUpdates();
+        }
+
+        checkIfParkingSaved();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_booking, menu);
+        saveMenuItem = menu.findItem(R.id.action_save_parking);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save_parking:
+                toggleParkingSaveState();
+//                saveParking();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void checkIfParkingSaved() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && parking != null) {
+            DocumentReference userRef = db.collection("customers").document(currentUser.getUid());
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    List<DocumentReference> savedParkings = (List<DocumentReference>) documentSnapshot.get("savedParkings");
+                    if (savedParkings != null) {
+                        for (DocumentReference ref : savedParkings) {
+                            if (ref.getId().equals(parking.getId())) {
+                                isParkingSaved = true;
+                                if (saveMenuItem != null) {
+                                    saveMenuItem.getIcon().setTint(Color.YELLOW);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void toggleParkingSaveState() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && parking != null) {
+            DocumentReference parkingRef = db.collection("parkings").document(parking.getId());
+            DocumentReference userRef = db.collection("customers").document(currentUser.getUid());
+
+            if (isParkingSaved) {
+                userRef.update("savedParkings", FieldValue.arrayRemove(parkingRef))
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Firestore", "Parking successfully removed!");
+                            // Change icon color back to default
+                            if (saveMenuItem != null) {
+                                saveMenuItem.getIcon().setTint(Color.WHITE);
+                            }
+                            isParkingSaved = false;
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.w("Firestore", "Error removing parking", e);
+                        });
+            } else {
+                userRef.update("savedParkings", FieldValue.arrayUnion(parkingRef))
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Firestore", "Parking successfully saved!");
+                            // Change icon color to yellow
+                            if (saveMenuItem != null) {
+                                saveMenuItem.getIcon().setTint(Color.YELLOW);
+                            }
+                            isParkingSaved = true;
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.w("Firestore", "Error saving parking", e);
+                        });
+            }
+        } else {
+            showLoginDialog();
         }
     }
 
