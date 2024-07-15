@@ -161,13 +161,6 @@ public class BookingActivity extends AppCompatActivity {
                 });
     }
 
-
-    private void refreshSlotDisplay(View slotView, Slot slot) {
-        Button btnBook = slotView.findViewById(R.id.btn_book);
-        btnBook.setBackgroundColor(slot.getAvailable() ? Color.GREEN : Color.RED);
-        btnBook.setText(slot.getAvailable() ? "Book" : "Cancel");
-    }
-
     private void showLoginDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("You need to log in to book a slot.")

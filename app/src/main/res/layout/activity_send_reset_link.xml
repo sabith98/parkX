@@ -86,7 +86,7 @@
         android:id="@+id/activity_send_reset_link_tv_instruction"
         android:layout_width="315dp"
         android:layout_height="wrap_content"
-        android:text="Enter your email address associated with your account. We will send you a verification code."
+        android:text="Enter your email address associated with your account. We will send you a password reset link."
         android:textAlignment="center"
         android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
